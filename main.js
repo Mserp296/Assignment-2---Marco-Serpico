@@ -33,6 +33,9 @@ function setupNavigation() {
     document.getElementById("navHome").addEventListener("click", function (event) {
 
         event.preventDefault();
+
+        document.getElementById("homeCheckoutMessage").style.display = "none";
+
         showView("homeView");
 
     });
@@ -41,29 +44,37 @@ function setupNavigation() {
     document.getElementById("navBrowse").addEventListener("click", function (event) {
 
         event.preventDefault();
+
+        document.getElementById("homeCheckoutMessage").style.display = "none";
+
         showView("browseView");
 
     });
 
-    //When cart is clicked, show cart view
+    //when cart is clicked, show cart view
     document.getElementById("navCart").addEventListener("click", function (event) {
 
         event.preventDefault();
-        showView("cartView");
 
+        document.getElementById("homeCheckoutMessage").style.display = "none";
+
+        showView("cartView");
         renderCart();
 
     });
 
-    //when about is clocked, show the about view
+    //when about is clicked, show the about dialog
     document.getElementById("navAbout").addEventListener("click", function (event) {
 
         event.preventDefault();
+
+        document.getElementById("homeCheckoutMessage").style.display = "none";
+
         document.getElementById("aboutDialog").style.display = "block";
 
     });
 
-    //when close is clicked, this hides the box
+    //when close is clicked, hide the about dialog
     document.getElementById("closeAboutBtn").addEventListener("click", function () {
 
         document.getElementById("aboutDialog").style.display = "none";
@@ -71,34 +82,36 @@ function setupNavigation() {
     });
 }
 
-//adds events to the search box, dropdowns, and clear button
+
 function setupControls() {
     //renders the products when the search text changes
     document.getElementById("searchInput").addEventListener("input", function () {
 
         renderProducts();
-
     });
 
     //renders products when the category changes
     document.getElementById("categorySelect").addEventListener("change", function () {
 
         renderProducts();
-
     });
 
     //renders the products when the gender changes
     document.getElementById("genderSelect").addEventListener("change", function () {
 
         renderProducts();
+    });
 
+    //renders the products when the color changes
+    document.getElementById("colorSelect").addEventListener("change", function () {
+
+        renderProducts();
     });
 
     //renders the products when the sort options change
     document.getElementById("sortSelect").addEventListener("change", function () {
 
         renderProducts();
-
     });
 
     //clear all function to clear options and show all products again
@@ -107,10 +120,10 @@ function setupControls() {
         document.getElementById("searchInput").value = "";
         document.getElementById("categorySelect").value = "all";
         document.getElementById("genderSelect").value = "all";
+        document.getElementById("colorSelect").value = "all";
         document.getElementById("sortSelect").value = "default";
 
         renderProducts();
-
     });
 }
 
@@ -134,7 +147,6 @@ function showView(viewId) {
 
 //loads products data from the JSON file
 function loadProducts() {
-
     //get the JSON text from the script tag in the HTML page
     let jsonText = document.getElementById("productData").textContent;
 
@@ -144,9 +156,11 @@ function loadProducts() {
     //fill the category dropdown
     fillCategoryOptions();
 
+    //fill the color dropdown
+    fillColorOptions();
+
     //display the products
     renderProducts();
-
 }
 
 //fills the category drop down with unique categories
@@ -191,6 +205,48 @@ function fillCategoryOptions() {
     }
 }
 
+function fillColorOptions() {
+    let colorSelect = document.getElementById("colorSelect");
+    let foundColors = [];
+
+    //loops through all products
+    for (let i = 0; i < products.length; i++) {
+
+        let productColors = products[i].color;
+
+        //loops through the colors for one product
+        for (let j = 0; j < productColors.length; j++) {
+
+            let colorName = productColors[j].name;
+            let exists = false;
+
+            //check if this color is already stored
+            for (let k = 0; k < foundColors.length; k++) {
+
+                if (foundColors[k] === colorName) {
+
+                    exists = true;
+                }
+            }
+
+            //if not already stored, add it
+            if (exists === false) {
+
+                foundColors.push(colorName);
+            }
+        }
+    }
+
+    //create an option for each different color
+    for (let i = 0; i < foundColors.length; i++) {
+
+        let option = document.createElement("option");
+        option.value = foundColors[i];
+        option.textContent = foundColors[i];
+        colorSelect.appendChild(option);
+    }
+}
+
 //shows the filtered products in the browse view
 function renderProducts() {
 
@@ -210,6 +266,7 @@ function renderProducts() {
     let searchText = document.getElementById("searchInput").value;
     let categoryValue = document.getElementById("categorySelect").value;
     let genderValue = document.getElementById("genderSelect").value;
+    let colorValue = document.getElementById("colorSelect").value;
 
     //if there is search text, this shows it as a selected filter
     if (searchText !== "") {
@@ -222,10 +279,8 @@ function renderProducts() {
         removeButton.textContent = "x";
 
         removeButton.addEventListener("click", function () {
-
             document.getElementById("searchInput").value = "";
             renderProducts();
-
         });
 
         filterBox.appendChild(removeButton);
@@ -243,17 +298,15 @@ function renderProducts() {
         removeButton.textContent = "x";
 
         removeButton.addEventListener("click", function () {
-
             document.getElementById("categorySelect").value = "all";
             renderProducts();
-
         });
 
         filterBox.appendChild(removeButton);
         currentFilters.appendChild(filterBox);
     }
 
-    //if a gender is selected then show is as a selected filter
+    //if a gender is selected then show it as a selected filter
     if (genderValue !== "all") {
 
         let filterBox = document.createElement("span");
@@ -264,22 +317,37 @@ function renderProducts() {
         removeButton.textContent = "x";
 
         removeButton.addEventListener("click", function () {
-
             document.getElementById("genderSelect").value = "all";
             renderProducts();
-            
         });
 
         filterBox.appendChild(removeButton);
         currentFilters.appendChild(filterBox);
     }
 
-    //if no products match the filter, this shows the its message
-    if (filtered.length === 0) {
+    //if a color is selected then show it as a selected filter
+    if (colorValue !== "all") {
 
+        let filterBox = document.createElement("span");
+        filterBox.className = "filter-box";
+        filterBox.textContent = "Color: " + colorValue;
+
+        let removeButton = document.createElement("button");
+        removeButton.textContent = "x";
+
+        removeButton.addEventListener("click", function () {
+            document.getElementById("colorSelect").value = "all";
+            renderProducts();
+        });
+
+        filterBox.appendChild(removeButton);
+        currentFilters.appendChild(filterBox);
+    }
+
+    //if no products match the filter, this shows the message
+    if (filtered.length === 0) {
         productList.innerHTML = "<p>No products found.</p>";
         return;
-
     }
 
     //loops through all filtered products
@@ -297,9 +365,7 @@ function renderProducts() {
         name.style.cursor = "pointer";
 
         name.addEventListener("click", function () {
-
             showSingleProduct(product.id);
-
         });
 
         //product image placeholder
@@ -309,9 +375,7 @@ function renderProducts() {
         imageBox.style.cursor = "pointer";
 
         imageBox.addEventListener("click", function () {
-
             showSingleProduct(product.id);
-
         });
 
         //product category
@@ -321,6 +385,10 @@ function renderProducts() {
         //product gender
         let gender = document.createElement("p");
         gender.textContent = "Gender: " + product.gender;
+
+        //product color
+        let color = document.createElement("p");
+        color.textContent = "Color: " + product.color[0].name;
 
         //product price
         let price = document.createElement("p");
@@ -335,9 +403,7 @@ function renderProducts() {
         detailsButton.textContent = "View Details";
 
         detailsButton.addEventListener("click", function () {
-
             showSingleProduct(product.id);
-
         });
 
         //button to add product to cart from browse view
@@ -345,18 +411,18 @@ function renderProducts() {
         addButton.textContent = "Add to Cart";
 
         addButton.addEventListener("click", function () {
-
             addToCart(product, 1, "", "");
         });
 
         buttonArea.appendChild(detailsButton);
         buttonArea.appendChild(addButton);
 
-        //adds all product into to the card
+        //adds all product info to the card
         card.appendChild(imageBox);
         card.appendChild(name);
         card.appendChild(category);
         card.appendChild(gender);
+        card.appendChild(color);
         card.appendChild(price);
         card.appendChild(buttonArea);
 
@@ -364,6 +430,7 @@ function renderProducts() {
         productList.appendChild(card);
     }
 }
+
 //returns only the products that match the current filters
 function getFilteredProducts() {
 
@@ -371,8 +438,8 @@ function getFilteredProducts() {
     let searchText = document.getElementById("searchInput").value.toLowerCase();
     let categoryValue = document.getElementById("categorySelect").value;
     let genderValue = document.getElementById("genderSelect").value;
+    let colorValue = document.getElementById("colorSelect").value;
     let sortValue = document.getElementById("sortSelect").value;
-
 
     //checks every product in the products array
     for (let i = 0; i < products.length; i++) {
@@ -382,34 +449,39 @@ function getFilteredProducts() {
         let matchesSearch = false;
         let matchesCategory = false;
         let matchesGender = false;
+        let matchesColor = false;
 
         //checks if the search appears in the product name or description
         if (product.name.toLowerCase().indexOf(searchText) !== -1 || product.description.toLowerCase().indexOf(searchText) !== -1) {
-
             matchesSearch = true;
         }
 
         //checks if the category matches or if all is selected
         if (categoryValue === "all" || product.category === categoryValue) {
-
             matchesCategory = true;
-
         }
 
-        //check is the gender matches or if all is selected
+        //checks if the gender matches or if all is selected
         if (genderValue === "all" || product.gender === genderValue) {
-
             matchesGender = true;
+        }
 
+        //checks if the color matches or if all is selected
+        if (colorValue === "all") {
+            matchesColor = true;
+        }
+        else {
+            for (let j = 0; j < product.color.length; j++) {
+                if (product.color[j].name === colorValue) {
+                    matchesColor = true;
+                }
+            }
         }
 
         //adds if the product matches all current filters
-        if (matchesSearch && matchesCategory && matchesGender) {
-
+        if (matchesSearch && matchesCategory && matchesGender && matchesColor) {
             result.push(product);
-
         }
-
     }
 
     //sorts the name alphabetically
@@ -418,47 +490,33 @@ function getFilteredProducts() {
         result.sort(function (a, b) {
 
             if (a.name < b.name) {
-
                 return -1;
-
             }
 
             if (a.name > b.name) {
-
                 return 1;
-
             }
 
             return 0;
-
         });
-
     }
 
     //sorts by lowest price first
     else if (sortValue === "priceAsc") {
-
         result.sort(function (a, b) {
-
             return a.price - b.price;
-
         });
-
     }
+
     //sort by highest price first
     else if (sortValue === "priceDesc") {
-
         result.sort(function (a, b) {
-
             return b.price - a.price;
-
         });
-
     }
 
     return result;
 }
-
 //shows one selected product in the single product view
 function showSingleProduct(productId) {
     let product = null;
@@ -831,17 +889,17 @@ function getShippingCost(merchandiseTotal, shippingType, destination) {
 
         if (shippingType === "Standard") {
 
-            return 5;
+            return 10;
         }
 
         if (shippingType === "Express") {
 
-            return 15;
+            return 25;
         }
 
         if (shippingType === "Priority") {
 
-            return 20;
+            return 35;
         }
     }
 
@@ -850,12 +908,12 @@ function getShippingCost(merchandiseTotal, shippingType, destination) {
 
         if (shippingType === "Standard") {
 
-            return 25;
+            return 15;
         }
 
         if (shippingType === "Express") {
 
-            return 30;
+            return 25;
         }
 
         if (shippingType === "Priority") {
@@ -870,17 +928,17 @@ function getShippingCost(merchandiseTotal, shippingType, destination) {
 
         if (shippingType === "Standard") {
 
-            return 35;
+            return 20;
         }
 
         if (shippingType === "Express") {
 
-            return 50;
+            return 30;
         }
 
         if (shippingType === "Priority") {
 
-            return 30;
+            return 50;
         }
 
     }
@@ -911,19 +969,17 @@ function setupCartOptions() {
     document.getElementById("checkoutBtn").addEventListener("click", function () {
 
         if (cart.length === 0) {
-
             return;
         }
 
-        //shows a checkout message
-        document.getElementById("checkoutMessage").textContent = "Checkout complete. Shopping cart cleared.";
-
-        //empty the cart and refresh the cart count
         cart = [];
         updateCartCount();
         renderCart();
-        showView("homeView");
 
+        let homeMessage = document.getElementById("homeCheckoutMessage");
+        homeMessage.style.display = "block";
+
+        showView("homeView");
     });
 }
 
