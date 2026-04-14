@@ -27,10 +27,6 @@ footer {
     margin-top: 0;
 }
 
-main {
-    padding: 20px;
-}
-
 .view,
 .content,
 #content {
@@ -279,13 +275,6 @@ nav span {
     height: 100%;
     box-sizing: border-box;
 }
-
-.product-card h3 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    color: #3c2f34;
-}
-
 
 .product-card-image {
     width: 100%;

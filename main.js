@@ -451,8 +451,7 @@ function getFilteredProducts() {
         let matchesGender = false;
         let matchesColor = false;
 
-        //checks if the search appears in the product name or description
-        //checks if the search box is empty or matches the product name exactly
+        //checks if the search matches the products name
         if (searchText === "" || product.name === searchText) {
             matchesSearch = true;
         }
