@@ -435,7 +435,7 @@ function renderProducts() {
 function getFilteredProducts() {
 
     let result = [];
-    let searchText = document.getElementById("searchInput").value.toLowerCase();
+    let searchText = document.getElementById("searchInput").value;
     let categoryValue = document.getElementById("categorySelect").value;
     let genderValue = document.getElementById("genderSelect").value;
     let colorValue = document.getElementById("colorSelect").value;
@@ -452,7 +452,8 @@ function getFilteredProducts() {
         let matchesColor = false;
 
         //checks if the search appears in the product name or description
-        if (product.name.toLowerCase().indexOf(searchText) !== -1 || product.description.toLowerCase().indexOf(searchText) !== -1) {
+        //checks if the search box is empty or matches the product name exactly
+        if (searchText === "" || product.name === searchText) {
             matchesSearch = true;
         }
 
@@ -789,16 +790,16 @@ function renderCart() {
 
         cartContent.innerHTML = "<p>Your cart is empty.</p>";
         cartSummary.innerHTML = "<p>Total: $0</p>";
-        checkoutBtn.disabled = true;
-        shippingSelect.disabled = true;
-        destinationSelect.disabled = true;
+
+        document.getElementById("cartOptions").style.display = "none";
+        checkoutBtn.style.display = "none";
+
         return;
     }
 
     //if the cart has items, enable the cart options
-    checkoutBtn.disabled = false;
-    shippingSelect.disabled = false;
-    destinationSelect.disabled = false;
+    document.getElementById("cartOptions").style.display = "flex";
+    checkoutBtn.style.display = "inline-block";
 
     //loops through each cart item
     for (let i = 0; i < cart.length; i++) {
@@ -807,12 +808,18 @@ function renderCart() {
 
         let line = document.createElement("div");
 
+        //cart image placeholder
+        let imageBox = document.createElement("div");
+        imageBox.className = "cart-image-placeholder";
+        imageBox.textContent = "Image";
+
         //calculates the items subtotal
         let subtotal = item.price * item.quantity;
         merchandiseTotal = merchandiseTotal + subtotal;
 
         //shows items details
         let text = document.createElement("p");
+
         //same source as the cart decimals
         //couldnt find any other way to fix this, this is the source
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed
@@ -842,6 +849,7 @@ function renderCart() {
 
         // adds the remove button and item text to the cart item
         line.appendChild(removeButton);
+        line.appendChild(imageBox);
         line.appendChild(text);
         cartContent.appendChild(line);
     }

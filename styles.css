@@ -461,6 +461,18 @@ nav span {
     color: #3c2f34;
 }
 
+.cart-image-placeholder {
+    width: 90px;
+    height: 90px;
+    background-color: #eee4dd;
+    border: 1px solid #c9b8ad;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
 /* modal */
 .modal {
     position: fixed;
